@@ -6,6 +6,11 @@ server:
   #   keyStoreType: PKCS12
   #   keyAlias: tomcat
   # port: ${PORT:8443}
+  # context-path: /edge
+
+management:
+  security:
+    enabled: false
 
 zuul:
   routes:
@@ -14,9 +19,9 @@ zuul:
     demo:
       path: /quote/**
       url: forward:/quotorama
-    user:
-      path: /user/**
-      url: http://localhost:9999/uaa/user
+    # user:
+    #   path: /user/**
+    #   url: http://localhost:9999/uaa/user
     # wx:
     #   path: /weather/**
     #   url: forward:http://api.openweathermap.org/data/2.5/find
@@ -32,6 +37,14 @@ spring:
       bindings:
         output:
           destination: test
+          contentType: application/json
+    gateway:
+      routes:
+        uri: lb://quote-service
+        predicates:
+        - Path=/qs/**
+        filters:
+        - RewritePath=/qs, /
   zipkin:
     host: localhost
     port: 9411
@@ -50,4 +63,4 @@ spring:
 #       userInfoUri: http://localhost:9999/uaa/user
 
 # Misc
-quote: "Whatever the question, coffee and chocolate are always the answer."
+quote: "Whatever the question, coffee is almost always the answer."
